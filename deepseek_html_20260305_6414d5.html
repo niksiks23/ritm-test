@@ -1,0 +1,2174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>РИТМ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #f9a8d4;      /* Нежно-розовый */
+            --primary-dark: #f472b6;  /* Чуть насыщеннее розовый */
+            --secondary: #fed7aa;     /* Персиковый */
+            --bg-dark: #fff5f7;       /* Очень светлый розовый фон */
+            --bg-card: rgba(255, 240, 245, 0.8); /* Полупрозрачный нежный */
+            --glass-border: rgba(249, 168, 212, 0.3);
+            --text-primary: #831843;  /* Темно-розовый для текста */
+            --text-secondary: rgba(131, 24, 67, 0.7);
+            --text-muted: rgba(131, 24, 67, 0.4);
+            --cancel-color: #fda4af;  /* Нежный красный */
+            --admin-badge: #f9a8d4;
+            --success: #86efac;        /* Нежно-зеленый */
+            --celebration: #fde047;    /* Мягкий желтый */
+            --march-8: #fb7185;        /* Праздничный розовый */
+            --filter-bg: rgba(249, 168, 212, 0.2);
+            --filter-empty: rgba(249, 168, 212, 0.05);
+        }
+
+        body {
+            background: var(--bg-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-primary);
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            height: 100dvh;
+            background: linear-gradient(145deg, #fff0f5 0%, #ffe4f0 100%);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(249, 168, 212, 0.2);
+            margin: 0 auto;
+        }
+
+        .app {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 2;
+        }
+
+        .app-header {
+            padding: 18px 20px 10px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(255, 240, 245, 0.95) 0%, rgba(255, 240, 245, 0.8) 100%);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-bottom: 1px solid var(--glass-border);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .app-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 30px;
+            transition: all 0.2s ease;
+        }
+
+        .app-header h1:active {
+            transform: scale(0.95);
+        }
+
+        .app-header p {
+            font-size: 12px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .admin-badge {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: var(--admin-badge);
+            color: white;
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .admin-badge.active {
+            opacity: 1;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 16px 12px;
+            background: rgba(255, 240, 245, 0.9);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-bottom: 1px solid var(--glass-border);
+            flex-shrink: 0;
+            gap: 5px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 500;
+            padding: 8px 0;
+            border-radius: 20px;
+            flex: 1;
+            max-width: 120px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item.active svg {
+            color: var(--primary);
+            filter: drop-shadow(0 0 5px var(--primary));
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 18px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Фильтр стили - адаптированы под тему 8 марта */
+        .filter-compact {
+            background: var(--bg-card);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 14px;
+            margin-bottom: 18px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .filter-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-title svg {
+            width: 16px;
+            height: 16px;
+            color: var(--primary);
+        }
+
+        .filter-badge {
+            background: var(--filter-bg);
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .filter-clear {
+            color: var(--primary);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: var(--filter-bg);
+        }
+
+        .filter-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--filter-empty);
+            border-radius: 16px;
+            padding: 6px 12px 6px 16px;
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-row:hover {
+            background: var(--filter-bg);
+        }
+
+        .filter-row.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: transparent;
+        }
+
+        .filter-row.active .row-label,
+        .filter-row.active .row-group,
+        .filter-row.active .row-icon {
+            color: white;
+        }
+
+        .row-icon {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .row-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 45px;
+        }
+
+        .row-group {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .row-group.empty {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .row-remove {
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            background: rgba(253, 164, 175, 0.2);
+            color: var(--cancel-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Модальные окна */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(249, 168, 212, 0.3);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 2000;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        .group-select-modal {
+            width: 100%;
+            max-width: 320px;
+            background: #fff5f7;
+            border-radius: 28px;
+            padding: 24px 20px;
+            border: 2px solid var(--primary);
+            box-shadow: 0 20px 40px rgba(249, 168, 212, 0.4);
+        }
+
+        .modal-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .groups-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 4px;
+        }
+
+        .groups-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .groups-list::-webkit-scrollbar-track {
+            background: var(--filter-empty);
+            border-radius: 2px;
+        }
+
+        .groups-list::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .group-item {
+            padding: 14px 16px;
+            margin-bottom: 6px;
+            background: var(--filter-empty);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .group-item:active {
+            background: var(--filter-bg);
+            transform: scale(0.98);
+        }
+
+        .group-item.selected {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-color: transparent;
+        }
+
+        .group-item.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .modal-close-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--filter-empty);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close-btn:active {
+            background: var(--filter-bg);
+        }
+
+        .goal-modal-content {
+            width: 100%;
+            max-width: 360px;
+            background: #fff5f7;
+            border-radius: 32px;
+            padding: 28px 24px;
+            border: 2px solid var(--primary);
+            box-shadow: 0 20px 40px rgba(249, 168, 212, 0.4);
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .goal-modal-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(249,168,212,0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .goal-modal-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
+        }
+
+        .goal-input {
+            width: 100%;
+            padding: 18px 20px;
+            margin: 12px 0;
+            background: rgba(249, 168, 212, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            color: var(--text-primary);
+            font-size: 16px;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .goal-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(249, 168, 212, 0.1);
+            box-shadow: 0 0 15px rgba(249, 168, 212, 0.3);
+        }
+
+        .goal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .goal-btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .goal-btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .goal-btn-primary:active {
+            transform: scale(0.95);
+            box-shadow: 0 5px 15px rgba(249, 168, 212, 0.4);
+        }
+
+        .goal-btn-secondary {
+            background: rgba(249, 168, 212, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid var(--glass-border);
+        }
+
+        .goal-btn-secondary:active {
+            background: rgba(249, 168, 212, 0.1);
+            transform: scale(0.95);
+        }
+
+        /* Календарь */
+        .calendar-wrapper {
+            background: var(--bg-card);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 18px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .calendar-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .calendar-nav-btn {
+            background: rgba(249, 168, 212, 0.1);
+            border: none;
+            color: var(--text-primary);
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .calendar-nav-btn:active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calendar-nav-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .weekday {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(249, 168, 212, 0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            position: relative;
+            color: var(--text-primary);
+        }
+
+        .calendar-day:active {
+            background: rgba(249, 168, 212, 0.2);
+        }
+
+        .calendar-day.has-training {
+            background: rgba(249, 168, 212, 0.2);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .calendar-day.selected {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.2;
+        }
+
+        .training-count {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: var(--primary);
+            color: white;
+            font-size: 9px;
+            width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .trainings-container {
+            margin-top: 14px;
+        }
+
+        .trainings-title {
+            font-size: 15px;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .trainings-title span {
+            background: rgba(249, 168, 212, 0.2);
+            padding: 4px 10px;
+            border-radius: 14px;
+            font-size: 12px;
+            color: var(--primary);
+        }
+
+        .training-item {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 14px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .training-item.admin-mode {
+            cursor: pointer;
+            border-left-color: var(--cancel-color);
+            background: rgba(253, 164, 175, 0.1);
+        }
+
+        .training-item.admin-mode:active {
+            background: rgba(253, 164, 175, 0.2);
+            transform: scale(0.98);
+        }
+
+        .training-item.cancelled {
+            opacity: 0.5;
+            border-left-color: var(--cancel-color);
+            text-decoration: line-through;
+            background: rgba(253, 164, 175, 0.1);
+        }
+
+        .training-time {
+            background: rgba(249, 168, 212, 0.2);
+            padding: 5px 10px;
+            border-radius: 18px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .training-item.cancelled .training-time {
+            background: rgba(253, 164, 175, 0.2);
+            color: var(--cancel-color);
+        }
+
+        .training-name {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .training-item.cancelled .training-name {
+            color: var(--cancel-color);
+        }
+
+        .training-cancel-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            background: var(--cancel-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(253, 164, 175, 0.4);
+        }
+
+        .no-trainings {
+            padding: 24px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 14px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .admin-mode-banner {
+            background: rgba(253, 164, 175, 0.1);
+            border: 1px dashed var(--cancel-color);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--cancel-color);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .admin-mode-banner svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .profile-header {
+            background: var(--bg-card);
+            backdrop-filter: blur(5px);
+            border-radius: 24px;
+            padding: 24px 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 10px 20px rgba(249, 168, 212, 0.3);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .profile-id {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .group-section {
+            background: var(--bg-card);
+            backdrop-filter: blur(5px);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .group-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .group-selector {
+            width: 100%;
+            padding: 16px;
+            background: rgba(249, 168, 212, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            color: var(--text-primary);
+            font-size: 16px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23f9a8d4' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+
+        .goals-section {
+            background: var(--bg-card);
+            backdrop-filter: blur(5px);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .goals-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .goal-item {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .goal-item.completed {
+            border-left-color: var(--celebration);
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px var(--celebration); }
+            50% { box-shadow: 0 0 20px var(--celebration); }
+            100% { box-shadow: 0 0 5px var(--celebration); }
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .goal-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .goal-delete {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            background: rgba(253, 164, 175, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cancel-color);
+            cursor: pointer;
+        }
+
+        .goal-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .goal-progress-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(249, 168, 212, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .goal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .goal-percent {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            min-width: 45px;
+            text-align: right;
+        }
+
+        .add-goal-btn {
+            width: 100%;
+            padding: 16px;
+            background: rgba(249, 168, 212, 0.05);
+            border: 1px dashed var(--glass-border);
+            border-radius: 16px;
+            color: var(--text-muted);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .soon-banner {
+            background: linear-gradient(135deg, rgba(249, 168, 212, 0.2), rgba(254, 215, 170, 0.2));
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .soon-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            background: rgba(249, 168, 212, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .soon-text {
+            flex: 1;
+        }
+
+        .soon-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .soon-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Праздничная анимация к 8 Марта */
+        .march8-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(249, 168, 212, 0.95), rgba(254, 215, 170, 0.95));
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: march8Appear 0.8s ease;
+        }
+
+        @keyframes march8Appear {
+            from {
+                opacity: 0;
+                backdrop-filter: blur(0);
+            }
+            to {
+                opacity: 1;
+                backdrop-filter: blur(8px);
+            }
+        }
+
+        @keyframes fadeOutMarch8 {
+            to {
+                opacity: 0;
+                backdrop-filter: blur(0);
+            }
+        }
+
+        .march8-content {
+            text-align: center;
+            color: white;
+            max-width: 360px;
+            padding: 30px;
+            position: relative;
+            animation: contentFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes contentFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .march8-flowers {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .flower {
+            font-size: 40px;
+            animation: flowerSpin 4s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .flower:nth-child(1) { animation-delay: 0s; }
+        .flower:nth-child(2) { animation-delay: 0.5s; }
+        .flower:nth-child(3) { animation-delay: 1s; }
+        .flower:nth-child(4) { animation-delay: 1.5s; }
+        .flower:nth-child(5) { animation-delay: 2s; }
+
+        @keyframes flowerSpin {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(10deg) scale(1.1); }
+        }
+
+        .march8-title {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #ffffff, #ffe0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+            letter-spacing: 4px;
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 30px rgba(255, 255, 255, 0.5); }
+            50% { text-shadow: 0 0 50px rgba(255, 255, 255, 0.8); }
+        }
+
+        .march8-message {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            opacity: 0;
+            animation: messageSlide 0.8s ease 0.3s forwards;
+        }
+
+        .march8-submessage {
+            font-size: 16px;
+            opacity: 0;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            animation: messageSlide 0.8s ease 0.6s forwards;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .march8-circles {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .circle {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: white;
+            animation: circlePulse 1.5s ease-in-out infinite;
+        }
+
+        .circle:nth-child(1) { animation-delay: 0s; background: #ffb3c6; }
+        .circle:nth-child(2) { animation-delay: 0.3s; background: #ffc2d1; }
+        .circle:nth-child(3) { animation-delay: 0.6s; background: #ffd1dc; }
+
+        @keyframes circlePulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+
+        .march8-hearts {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .heart {
+            font-size: 20px;
+            animation: heartBeat 1s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .heart:nth-child(1) { animation-delay: 0s; }
+        .heart:nth-child(2) { animation-delay: 0.2s; }
+        .heart:nth-child(3) { animation-delay: 0.4s; }
+        .heart:nth-child(4) { animation-delay: 0.6s; }
+        .heart:nth-child(5) { animation-delay: 0.8s; }
+        .heart:nth-child(6) { animation-delay: 1s; }
+        .heart:nth-child(7) { animation-delay: 1.2s; }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        .march8-ribbon {
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, white, transparent);
+            margin-top: 20px;
+            animation: ribbonGlide 2s ease-in-out infinite;
+        }
+
+        @keyframes ribbonGlide {
+            0% { transform: scaleX(0.3); opacity: 0.3; }
+            50% { transform: scaleX(1); opacity: 1; }
+            100% { transform: scaleX(0.3); opacity: 0.3; }
+        }
+
+        .march8-petal {
+            position: fixed;
+            color: white;
+            font-size: 20px;
+            pointer-events: none;
+            z-index: 10001;
+            animation: petalFallMarch8 linear forwards;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes petalFallMarch8 {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .admin-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: calc(100% - 32px);
+            max-width: 300px;
+            background: #fff5f7;
+            border-radius: 28px;
+            padding: 28px 24px;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary);
+            box-shadow: 0 10px 40px rgba(249, 168, 212, 0.4);
+        }
+
+        .admin-modal.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .admin-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(249, 168, 212, 0.3);
+            backdrop-filter: blur(3px);
+            z-index: 2500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .admin-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .admin-panel {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            max-width: 420px;
+            right: 0;
+            margin: 0 auto;
+            background: #fff5f7;
+            border-top-left-radius: 32px;
+            border-top-right-radius: 32px;
+            padding: 28px 20px 30px;
+            z-index: 3500;
+            transition: bottom 0.3s ease;
+            box-shadow: 0 -10px 30px rgba(249, 168, 212, 0.3);
+            border-top: 2px solid var(--primary);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .admin-panel.active {
+            bottom: 0;
+        }
+
+        .admin-handle {
+            width: 45px;
+            height: 5px;
+            background: var(--primary);
+            border-radius: 3px;
+            margin: 0 auto 22px;
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 16px;
+            margin: 10px 0;
+            background: rgba(249, 168, 212, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            color: var(--text-primary);
+            font-size: 15px;
+            text-align: center;
+        }
+
+        .admin-btn {
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 18px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 8px 0;
+            width: 100%;
+            font-size: 15px;
+            transition: all 0.15s ease;
+        }
+
+        .admin-tip {
+            background: rgba(253, 164, 175, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            border: 1px solid rgba(253, 164, 175, 0.3);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            z-index: 4000;
+            box-shadow: 0 5px 20px rgba(249, 168, 212, 0.4);
+            animation: slideUp 0.3s ease;
+            max-width: calc(100% - 32px);
+            text-align: center;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app" id="mainApp">
+            <header class="app-header">
+                <h1 id="adminTrigger">РИТМ</h1>
+                <p>ver 1.2</p>
+                <div class="admin-badge" id="adminBadge">ADMIN</div>
+            </header>
+
+            <nav class="nav-bar" id="navigation">
+                <div class="nav-item active" data-page="schedule">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                    <span>Расписание</span>
+                </div>
+                <div class="nav-item" data-page="profile">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <span>Профиль</span>
+                </div>
+            </nav>
+
+            <div class="content" id="content"></div>
+        </div>
+
+        <div class="admin-overlay" id="adminOverlay"></div>
+
+        <div class="admin-modal" id="adminLoginModal">
+            <h3 style="color: var(--text-primary); text-align: center; margin-bottom: 16px;">Вход администратора</h3>
+            <input type="password" class="admin-input" id="adminPassword" placeholder="Пароль" />
+            <button class="admin-btn" onclick="checkAdminPassword()">Войти</button>
+            <button class="admin-btn secondary" onclick="closeAdminLogin()" style="background: rgba(249,168,212,0.1); color: var(--text-secondary); border: 1px solid var(--glass-border);">Отмена</button>
+        </div>
+
+        <div class="admin-panel" id="adminPanel">
+            <div class="admin-handle"></div>
+            <h2 style="color: var(--text-primary); text-align: center; margin-bottom: 20px;">Управление</h2>
+            
+            <div class="admin-tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <span>Нажмите на тренировку в расписании чтобы отменить или восстановить (для всех пользователей)</span>
+            </div>
+            
+            <button class="admin-btn secondary" onclick="closeAdminPanel()" style="background: rgba(249,168,212,0.1); color: var(--text-secondary); border: 1px solid var(--glass-border);">Закрыть</button>
+            <button class="admin-btn warning" onclick="logoutAdmin()" style="background: var(--cancel-color);">Выйти из админа</button>
+        </div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <script>
+        // Константы
+        const STORAGE_KEYS = {
+            CANCELLED_TRAININGS: 'ritm_cancelled_trainings',
+            PROFILE: 'ritm_profile',
+            USER_GROUP: 'ritm_user_group',
+            SELECTED_GROUPS: 'ritm_selected_groups', // Добавлено для фильтрации
+            MARCH8_SHOWN: 'ritm_march8_shown'
+        };
+
+        // Расписание
+        const WEEKLY_SCHEDULE = {
+            1: [ // Понедельник
+                { time: '17:15', name: 'Ритмика (3-5 лет)' },
+                { time: '18:00', name: 'Калланетика' },
+                { time: '19:00', name: 'Латина (старшая)' },
+                { time: '20:00', name: 'Латина (новички)' }
+            ],
+            2: [ // Вторник
+                { time: '18:00', name: 'Бальные танцы (5-6 лет)' },
+                { time: '19:00', name: 'Бальные танцы (7-9 лет)' }
+            ],
+            3: [ // Среда
+                { time: '18:00', name: 'Бальные танцы' },
+                { time: '19:00', name: 'Латина (старшая)' },
+                { time: '20:00', name: 'Индивидуальные' }
+            ],
+            4: [ // Четверг
+                { time: '18:00', name: 'Бальные танцы (5-6 лет)' },
+                { time: '19:00', name: 'Бальные танцы (9-12 лет)' },
+                { time: '20:00', name: 'Бачата (новички)' }
+            ],
+            5: [ // Пятница
+                { time: '17:15', name: 'Ритмика (3-5 лет)' },
+                { time: '18:00', name: 'Бальные танцы' },
+                { time: '19:00', name: 'Индивидуальные' }
+            ],
+            6: [ // Суббота
+                { time: '9:00', name: 'Калланетика' },
+                { time: '10:00', name: 'Бачата + Латина' },
+                { time: '11:00', name: 'Бальные танцы (9-12 лет)' },
+                { time: '12:00', name: 'Индивидуальные' }
+            ],
+            0: [] // Воскресенье
+        };
+
+        // Группы
+        const ALL_GROUPS = [
+            'Ритмика (3-5 лет)',
+            'Бальные танцы (5-6 лет)',
+            'Бальные танцы (7-9 лет)',
+            'Бальные танцы (9-12 лет)',
+            'Латина (новички)',
+            'Латина (старшая)',
+            'Калланетика',
+            'Бачата (новички)',
+            'Индивидуальные'
+        ];
+
+        // Данные приложения
+        let appData = {
+            cancelledTrainings: {},
+            profile: {
+                goals: []
+            },
+            userGroup: '',
+            selectedGroups: [] // Для фильтрации
+        };
+        
+        let currentPage = 'schedule';
+        let selectedDate = new Date().toISOString().split('T')[0];
+        let currentMonth = new Date();
+        let isAdmin = false;
+        let tg = null;
+        let cloudStorage = null;
+        let tgUser = 'Танцор';
+        let activeFilterRow = null;
+
+        // Инициализация Telegram
+        try {
+            if (window.Telegram && Telegram.WebApp) {
+                tg = Telegram.WebApp;
+                tg.ready();
+                tg.expand();
+                
+                tg.setHeaderColor('#fff5f7');
+                tg.setBackgroundColor('#fff0f5');
+                
+                const user = tg.initDataUnsafe?.user;
+                if (user) {
+                    tgUser = user.first_name || user.username || 'Танцор';
+                }
+                
+                cloudStorage = tg.CloudStorage;
+            }
+        } catch (e) {
+            console.log('Не удалось инициализировать Telegram:', e);
+        }
+
+        // Загрузка данных
+        function loadData() {
+            try {
+                if (cloudStorage) {
+                    cloudStorage.getItem(STORAGE_KEYS.CANCELLED_TRAININGS, (error, value) => {
+                        if (!error && value) {
+                            try {
+                                appData.cancelledTrainings = JSON.parse(value);
+                                if (currentPage === 'schedule') renderSchedule();
+                            } catch (e) {}
+                        }
+                    });
+                    
+                    cloudStorage.getItem(STORAGE_KEYS.PROFILE, (error, value) => {
+                        if (!error && value) {
+                            try {
+                                appData.profile = JSON.parse(value);
+                                if (currentPage === 'profile') renderProfile();
+                            } catch (e) {}
+                        }
+                    });
+                    
+                    cloudStorage.getItem(STORAGE_KEYS.USER_GROUP, (error, value) => {
+                        if (!error && value) {
+                            appData.userGroup = value;
+                            if (currentPage === 'profile') renderProfile();
+                        }
+                    });
+                    
+                    // Загружаем выбранные группы для фильтрации
+                    cloudStorage.getItem(STORAGE_KEYS.SELECTED_GROUPS, (error, value) => {
+                        if (!error && value) {
+                            try {
+                                appData.selectedGroups = JSON.parse(value);
+                                if (currentPage === 'schedule') renderSchedule();
+                            } catch (e) {}
+                        }
+                    });
+                } else {
+                    const savedCancelled = localStorage.getItem(STORAGE_KEYS.CANCELLED_TRAININGS);
+                    if (savedCancelled) appData.cancelledTrainings = JSON.parse(savedCancelled);
+                    
+                    const savedProfile = localStorage.getItem(STORAGE_KEYS.PROFILE);
+                    if (savedProfile) appData.profile = JSON.parse(savedProfile);
+                    
+                    const savedGroup = localStorage.getItem(STORAGE_KEYS.USER_GROUP);
+                    if (savedGroup) appData.userGroup = savedGroup;
+                    
+                    const savedSelectedGroups = localStorage.getItem(STORAGE_KEYS.SELECTED_GROUPS);
+                    if (savedSelectedGroups) appData.selectedGroups = JSON.parse(savedSelectedGroups);
+                }
+            } catch (e) {
+                console.error('Ошибка загрузки:', e);
+            }
+        }
+
+        // Сохранение данных
+        function saveData() {
+            try {
+                if (cloudStorage) {
+                    cloudStorage.setItem(STORAGE_KEYS.CANCELLED_TRAININGS, JSON.stringify(appData.cancelledTrainings), () => {});
+                    cloudStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(appData.profile), () => {});
+                    cloudStorage.setItem(STORAGE_KEYS.USER_GROUP, appData.userGroup, () => {});
+                    cloudStorage.setItem(STORAGE_KEYS.SELECTED_GROUPS, JSON.stringify(appData.selectedGroups), () => {});
+                } else {
+                    localStorage.setItem(STORAGE_KEYS.CANCELLED_TRAININGS, JSON.stringify(appData.cancelledTrainings));
+                    localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(appData.profile));
+                    localStorage.setItem(STORAGE_KEYS.USER_GROUP, appData.userGroup);
+                    localStorage.setItem(STORAGE_KEYS.SELECTED_GROUPS, JSON.stringify(appData.selectedGroups));
+                }
+            } catch (e) {
+                console.error('Ошибка сохранения:', e);
+            }
+        }
+
+        // Функция для проверки и показа анимации к 8 Марта
+        function showMarch8AnimationIfNeeded() {
+            const checkIfShown = () => {
+                return new Promise((resolve) => {
+                    if (cloudStorage) {
+                        cloudStorage.getItem(STORAGE_KEYS.MARCH8_SHOWN, (error, value) => {
+                            resolve(!error && value === 'true');
+                        });
+                    } else {
+                        resolve(localStorage.getItem(STORAGE_KEYS.MARCH8_SHOWN) === 'true');
+                    }
+                });
+            };
+
+            const markAsShown = () => {
+                if (cloudStorage) {
+                    cloudStorage.setItem(STORAGE_KEYS.MARCH8_SHOWN, 'true', () => {});
+                } else {
+                    localStorage.setItem(STORAGE_KEYS.MARCH8_SHOWN, 'true');
+                }
+            };
+
+            checkIfShown().then(alreadyShown => {
+                if (!alreadyShown) {
+                    // Показываем стильную анимацию
+                    const overlay = document.createElement('div');
+                    overlay.className = 'march8-overlay';
+                    overlay.innerHTML = `
+                        <div class="march8-content">
+                            <div class="march8-flowers">
+                                <div class="flower">🌸</div>
+                                <div class="flower">🌷</div>
+                                <div class="flower">🌹</div>
+                                <div class="flower">🌺</div>
+                                <div class="flower">💐</div>
+                            </div>
+                            <div class="march8-title">8 МАРТА</div>
+                            <div class="march8-message">С праздником весны, дорогие девушки!</div>
+                            <div class="march8-submessage">Пусть каждый день будет наполнен красотой, радостью и вдохновением</div>
+                            <div class="march8-circles">
+                                <div class="circle"></div>
+                                <div class="circle"></div>
+                                <div class="circle"></div>
+                            </div>
+                            <div class="march8-hearts">
+                                <span class="heart">❤️</span>
+                                <span class="heart">🧡</span>
+                                <span class="heart">💛</span>
+                                <span class="heart">💚</span>
+                                <span class="heart">💙</span>
+                                <span class="heart">💜</span>
+                                <span class="heart">🩷</span>
+                            </div>
+                            <div class="march8-ribbon"></div>
+                        </div>
+                    `;
+                    document.body.appendChild(overlay);
+
+                    // Создаем падающие элементы
+                    const elements = ['🌸', '🌷', '🌹', '🌺', '💐', '✨', '⭐', '🩷', '❤️', '🧡', '💛', '💚', '💙', '💜'];
+                    
+                    for (let i = 0; i < 50; i++) {
+                        setTimeout(() => {
+                            const petal = document.createElement('div');
+                            petal.className = 'march8-petal';
+                            petal.textContent = elements[Math.floor(Math.random() * elements.length)];
+                            petal.style.left = Math.random() * 100 + '%';
+                            petal.style.fontSize = (15 + Math.random() * 25) + 'px';
+                            petal.style.animationDuration = (6 + Math.random() * 6) + 's';
+                            petal.style.opacity = 0.3 + Math.random() * 0.7;
+                            petal.style.transform = `rotate(${Math.random() * 360}deg)`;
+                            document.body.appendChild(petal);
+                            setTimeout(() => petal.remove(), 12000);
+                        }, i * 100);
+                    }
+
+                    // Удаляем анимацию через 10 секунд
+                    setTimeout(() => {
+                        overlay.style.animation = 'fadeOutMarch8 0.8s ease forwards';
+                        setTimeout(() => overlay.remove(), 800);
+                        markAsShown();
+                    }, 10000);
+                }
+            });
+        }
+
+        // Загрузка при старте
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            renderSchedule();
+            initAdminTrigger();
+            updateAdminBadge();
+            showMarch8AnimationIfNeeded();
+        });
+
+        // Переключение страниц
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                currentPage = item.dataset.page;
+                
+                if (currentPage === 'schedule') {
+                    renderSchedule();
+                } else if (currentPage === 'profile') {
+                    renderProfile();
+                }
+            });
+        });
+
+        // Функции фильтрации - взяты из первого файла
+        function isTrainingVisible(training) {
+            if (!appData.selectedGroups || appData.selectedGroups.length === 0) {
+                return true;
+            }
+            return appData.selectedGroups.some(group => training.name.includes(group));
+        }
+
+        // Открыть модальное окно выбора группы
+        window.openGroupSelector = function(rowIndex) {
+            activeFilterRow = rowIndex;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.setAttribute('onclick', 'closeModalIfOutside(event)');
+            
+            let groupsHtml = '';
+            ALL_GROUPS.forEach(group => {
+                const isSelected = appData.selectedGroups[rowIndex] === group;
+                const isDisabled = !isSelected && appData.selectedGroups.length >= 2 && appData.selectedGroups[rowIndex] === undefined;
+                
+                groupsHtml += `
+                    <div class="group-item ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}" 
+                         onclick="${!isDisabled || isSelected ? `selectGroup('${group.replace(/'/g, "\\'")}')` : ''}">
+                        ${group}
+                    </div>
+                `;
+            });
+            
+            modal.innerHTML = `
+                <div class="group-select-modal" onclick="event.stopPropagation()">
+                    <div class="modal-title">Выберите группу</div>
+                    <div class="groups-list">
+                        ${groupsHtml}
+                    </div>
+                    <button class="modal-close-btn" onclick="closeModal()">Отмена</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        };
+
+        // Выбрать группу
+        window.selectGroup = function(group) {
+            if (activeFilterRow !== null) {
+                if (!appData.selectedGroups) {
+                    appData.selectedGroups = [];
+                }
+                
+                const existingIndex = appData.selectedGroups.indexOf(group);
+                if (existingIndex !== -1 && existingIndex !== activeFilterRow) {
+                    appData.selectedGroups[existingIndex] = undefined;
+                }
+                
+                appData.selectedGroups[activeFilterRow] = group;
+                appData.selectedGroups = appData.selectedGroups.filter(g => g !== undefined);
+                
+                saveData();
+                closeModal();
+                renderSchedule();
+                showToast(`Выбрана группа: ${group}`);
+            }
+        };
+
+        // Удалить группу из фильтра
+        window.removeGroup = function(rowIndex, event) {
+            event.stopPropagation();
+            
+            if (appData.selectedGroups && appData.selectedGroups[rowIndex]) {
+                const removedGroup = appData.selectedGroups[rowIndex];
+                appData.selectedGroups.splice(rowIndex, 1);
+                saveData();
+                renderSchedule();
+                showToast(`Группа ${removedGroup} убрана из фильтра`);
+            }
+        };
+
+        // Очистить все фильтры
+        window.clearAllFilters = function() {
+            appData.selectedGroups = [];
+            saveData();
+            renderSchedule();
+            showToast('Все фильтры сброшены');
+        };
+
+        // Рендер расписания - с фильтром
+        function renderSchedule() {
+            const content = document.getElementById('content');
+            if (!content) return;
+            
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+            
+            const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            const weekdays = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+            
+            // Фильтр
+            let filterHtml = `
+                <div class="filter-compact">
+                    <div class="filter-header">
+                        <div class="filter-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="22 3 2 3 10 13 10 21 14 18 14 13 22 3" />
+                            </svg>
+                            Мои группы
+                        </div>
+                        <div>
+                            ${appData.selectedGroups && appData.selectedGroups.length > 0 ? 
+                                `<span class="filter-clear" onclick="clearAllFilters()">Сбросить ✕</span>` : 
+                                `<span class="filter-badge">0/2</span>`}
+                        </div>
+                    </div>
+                    <div class="filter-rows">
+                        <div class="filter-row ${appData.selectedGroups && appData.selectedGroups[0] ? 'active' : ''}" onclick="openGroupSelector(0)">
+                            <span class="row-icon">①</span>
+                            <span class="row-label">Группа 1</span>
+                            <span class="row-group ${!appData.selectedGroups || !appData.selectedGroups[0] ? 'empty' : ''}">${appData.selectedGroups && appData.selectedGroups[0] ? appData.selectedGroups[0] : 'не выбрана'}</span>
+                            ${appData.selectedGroups && appData.selectedGroups[0] ? `<span class="row-remove" onclick="removeGroup(0, event)">✕</span>` : ''}
+                        </div>
+                        <div class="filter-row ${appData.selectedGroups && appData.selectedGroups[1] ? 'active' : ''}" onclick="openGroupSelector(1)">
+                            <span class="row-icon">②</span>
+                            <span class="row-label">Группа 2</span>
+                            <span class="row-group ${!appData.selectedGroups || !appData.selectedGroups[1] ? 'empty' : ''}">${appData.selectedGroups && appData.selectedGroups[1] ? appData.selectedGroups[1] : 'не выбрана'}</span>
+                            ${appData.selectedGroups && appData.selectedGroups[1] ? `<span class="row-remove" onclick="removeGroup(1, event)">✕</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            let html = filterHtml;
+            
+            html += `
+                <div class="calendar-wrapper">
+                    <div class="calendar-header">
+                        <button class="calendar-nav-btn" onclick="changeMonth(-1)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 18 9 12 15 6" /></svg>
+                        </button>
+                        <h3>${months[month]} ${year}</h3>
+                        <button class="calendar-nav-btn" onclick="changeMonth(1)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6" /></svg>
+                        </button>
+                    </div>
+                    <div class="weekdays">${weekdays.map(d => `<div class="weekday">${d}</div>`).join('')}</div>
+                    <div class="calendar-grid">
+            `;
+            
+            for (let i = 0; i < startDay; i++) html += '<div class="calendar-day other-month"></div>';
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                const trainings = getTrainingsForDate(dateStr);
+                
+                // Используем isTrainingVisible для фильтрации
+                const visibleTrainings = trainings.filter(t => !t.isCancelled && isTrainingVisible(t));
+                const hasVisibleTraining = visibleTrainings.length > 0;
+                const isSelected = selectedDate === dateStr;
+                
+                html += `
+                    <div class="calendar-day ${hasVisibleTraining ? 'has-training' : ''} ${isSelected ? 'selected' : ''}" onclick="selectDate('${dateStr}')">
+                        ${i}
+                        ${visibleTrainings.length > 0 ? `<span class="training-count">${visibleTrainings.length}</span>` : ''}
+                    </div>
+                `;
+            }
+            
+            html += '</div></div>';
+            
+            if (isAdmin) {
+                html += `
+                    <div class="admin-mode-banner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        <span>Режим администратора: нажмите на тренировку чтобы отменить или восстановить (для всех)</span>
+                    </div>
+                `;
+            }
+            
+            html += '<div class="trainings-container">';
+            html += `<div class="trainings-title">📅 Тренировки <span>${formatDate(selectedDate)}</span></div>`;
+            
+            const trainings = getTrainingsForDate(selectedDate);
+            // Фильтруем по группам
+            const visibleTrainings = trainings.filter(t => isTrainingVisible(t));
+            
+            if (visibleTrainings.length > 0) {
+                visibleTrainings.forEach(t => {
+                    const isCancelled = t.isCancelled;
+                    const cancelledClass = isCancelled ? 'cancelled' : '';
+                    const adminClass = isAdmin ? 'admin-mode' : '';
+                    
+                    html += `
+                        <div class="training-item ${adminClass} ${cancelledClass}" 
+                             onclick="${isAdmin ? `toggleCancelTraining('${selectedDate}', '${t.time}', '${t.name.replace(/'/g, "\\'")}')` : ''}">
+                            <span class="training-time">${t.time}</span>
+                            <span class="training-name">${t.name}</span>
+                            ${isAdmin ? '<span class="training-cancel-btn">✕</span>' : ''}
+                        </div>
+                    `;
+                });
+            } else {
+                if (trainings.length > 0) {
+                    html += '<div class="no-trainings">Нет занятий для выбранных групп</div>';
+                } else {
+                    html += '<div class="no-trainings">Нет тренировок</div>';
+                }
+            }
+            html += '</div>';
+            
+            content.innerHTML = html;
+        }
+
+        // Рендер профиля - убраны все упоминания уведомлений
+        function renderProfile() {
+            const content = document.getElementById('content');
+            if (!content) return;
+            
+            let goalsHtml = '';
+            
+            if (appData.profile.goals && appData.profile.goals.length > 0) {
+                appData.profile.goals.forEach((goal, index) => {
+                    const completedClass = goal.progress === 100 ? 'completed' : '';
+                    goalsHtml += `
+                        <div class="goal-item ${completedClass}" onclick="editGoalProgress(${index})">
+                            <div class="goal-header">
+                                <div class="goal-text">${goal.text}</div>
+                                <div class="goal-delete" onclick="event.stopPropagation(); deleteGoal(${index})">✕</div>
+                            </div>
+                            <div class="goal-progress">
+                                <div class="goal-progress-bar">
+                                    <div class="goal-progress-fill" style="width: ${goal.progress}%;"></div>
+                                </div>
+                                <div class="goal-percent">${goal.progress}%</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                goalsHtml = `
+                    <div style="text-align: center; padding: 30px 20px; color: var(--text-muted);">
+                        <p>Нет целей. Добавьте первую!</p>
+                    </div>
+                `;
+            }
+            
+            content.innerHTML = `
+                <div class="profile-header">
+                    <div class="profile-avatar">${tgUser.charAt(0).toUpperCase()}</div>
+                    <div class="profile-info">
+                        <div class="profile-name">${tgUser}</div>
+                        <div class="profile-id">Участник клуба</div>
+                    </div>
+                </div>
+                
+                <div class="group-section">
+                    <div class="group-title">Моя группа</div>
+                    <select class="group-selector" id="userGroupSelect" onchange="selectUserGroup()">
+                        <option value="">Выберите группу</option>
+                        ${ALL_GROUPS.map(group => 
+                            `<option value="${group}" ${appData.userGroup === group ? 'selected' : ''}>${group}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+                
+                <div class="goals-section">
+                    <div class="goals-title">Мои цели</div>
+                    ${goalsHtml}
+                    <div class="add-goal-btn" onclick="openAddGoalModal()">+ Добавить цель</div>
+                </div>
+                
+                <div class="soon-banner">
+                    <div class="soon-icon">📈</div>
+                    <div class="soon-text">
+                        <div class="soon-title">Различные трекеры</div>
+                        <div class="soon-desc">В обновлении 1.5</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Получение тренировок для даты
+        function getTrainingsForDate(dateStr) {
+            const date = new Date(dateStr);
+            const dayOfWeek = date.getDay();
+            const weeklyTrainings = WEEKLY_SCHEDULE[dayOfWeek] || [];
+            const cancelledForDate = appData.cancelledTrainings[dateStr] || [];
+            
+            return weeklyTrainings.map(training => {
+                const trainingKey = `${training.time} ${training.name}`;
+                return {
+                    ...training,
+                    isCancelled: cancelledForDate.includes(trainingKey)
+                };
+            });
+        }
+
+        // Выбор группы
+        window.selectUserGroup = function() {
+            const select = document.getElementById('userGroupSelect');
+            if (select) {
+                appData.userGroup = select.value;
+                saveData();
+                showToast(`Группа сохранена`);
+            }
+        };
+
+        // Цели
+        window.openAddGoalModal = function() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.setAttribute('onclick', 'closeModalIfOutside(event)');
+            modal.innerHTML = `
+                <div class="goal-modal-content" onclick="event.stopPropagation()">
+                    <div class="goal-modal-title">Новая цель</div>
+                    <input type="text" class="goal-input" id="goalText" placeholder="Например: Похудеть на 5 кг" autofocus>
+                    <div class="goal-buttons">
+                        <button class="goal-btn goal-btn-secondary" onclick="closeModal()">Отмена</button>
+                        <button class="goal-btn goal-btn-primary" onclick="saveGoal()">Добавить</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            document.getElementById('goalText')?.focus();
+        };
+
+        window.saveGoal = function() {
+            const input = document.getElementById('goalText');
+            if (input?.value.trim()) {
+                appData.profile.goals.push({
+                    text: input.value.trim(),
+                    progress: 0
+                });
+                saveData();
+                closeModal();
+                renderProfile();
+                showToast('Цель добавлена');
+            }
+        };
+
+        window.editGoalProgress = function(index) {
+            const goal = appData.profile.goals[index];
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.setAttribute('onclick', 'closeModalIfOutside(event)');
+            modal.innerHTML = `
+                <div class="goal-modal-content" onclick="event.stopPropagation()">
+                    <div class="goal-modal-title">Прогресс</div>
+                    <div style="text-align:center; margin-bottom:16px; color:var(--text-secondary);">${goal.text}</div>
+                    <input type="number" class="goal-input" id="goalProgress" value="${goal.progress}" min="0" max="100" autofocus>
+                    <div class="goal-buttons">
+                        <button class="goal-btn goal-btn-secondary" onclick="closeModal()">Отмена</button>
+                        <button class="goal-btn goal-btn-primary" onclick="updateGoalProgress(${index})">Сохранить</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            document.getElementById('goalProgress')?.focus();
+        };
+
+        window.updateGoalProgress = function(index) {
+            const input = document.getElementById('goalProgress');
+            const progress = parseInt(input?.value);
+            
+            if (!isNaN(progress) && progress >= 0 && progress <= 100) {
+                const goal = appData.profile.goals[index];
+                const wasNot100 = goal.progress !== 100;
+                goal.progress = progress;
+                
+                if (progress === 100 && wasNot100) {
+                    celebrateGoal(goal.text);
+                }
+                
+                saveData();
+                closeModal();
+                renderProfile();
+            }
+        };
+
+        window.deleteGoal = function(index) {
+            if (confirm('Удалить цель?')) {
+                appData.profile.goals.splice(index, 1);
+                saveData();
+                renderProfile();
+                showToast('Цель удалена');
+            }
+        };
+
+        function celebrateGoal(goalText) {
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 50);
+            }
+            
+            const celebration = document.createElement('div');
+            celebration.className = 'celebration-modal';
+            celebration.innerHTML = `
+                <h2>ПОЗДРАВЛЯЕМ!</h2>
+                <p>Вы выполнили цель:</p>
+                <p><strong>"${goalText}"</strong></p>
+            `;
+            document.body.appendChild(celebration);
+            setTimeout(() => celebration.remove(), 4000);
+        }
+
+        // Расписание
+        window.changeMonth = function(delta) {
+            currentMonth.setMonth(currentMonth.getMonth() + delta);
+            renderSchedule();
+        };
+
+        window.selectDate = function(date) {
+            selectedDate = date;
+            renderSchedule();
+        };
+
+        function formatDate(dateStr) {
+            const [y, m, d] = dateStr.split('-');
+            return `${d}.${m}`;
+        }
+
+        window.toggleCancelTraining = function(date, time, name) {
+            if (!isAdmin) return;
+            
+            const trainingKey = `${time} ${name}`;
+            
+            if (!appData.cancelledTrainings[date]) {
+                appData.cancelledTrainings[date] = [];
+            }
+            
+            const index = appData.cancelledTrainings[date].indexOf(trainingKey);
+            
+            if (index === -1) {
+                appData.cancelledTrainings[date].push(trainingKey);
+                showToast('❌ Тренировка отменена для всех');
+            } else {
+                appData.cancelledTrainings[date].splice(index, 1);
+                showToast('✅ Тренировка восстановлена для всех');
+            }
+            
+            if (appData.cancelledTrainings[date].length === 0) {
+                delete appData.cancelledTrainings[date];
+            }
+            
+            saveData();
+            renderSchedule();
+        };
+
+        // Админ панель
+        function initAdminTrigger() {
+            const trigger = document.getElementById('adminTrigger');
+            trigger.addEventListener('click', () => {
+                if (!isAdmin) {
+                    document.getElementById('adminLoginModal').classList.add('active');
+                    document.getElementById('adminOverlay').classList.add('active');
+                } else {
+                    document.getElementById('adminPanel').classList.add('active');
+                    document.getElementById('adminOverlay').classList.add('active');
+                }
+            });
+        }
+
+        function updateAdminBadge() {
+            const badge = document.getElementById('adminBadge');
+            badge.classList.toggle('active', isAdmin);
+        }
+
+        window.closeAdminLogin = function() {
+            document.getElementById('adminLoginModal').classList.remove('active');
+            document.getElementById('adminOverlay').classList.remove('active');
+        };
+
+        window.closeAdminPanel = function() {
+            document.getElementById('adminPanel').classList.remove('active');
+            document.getElementById('adminOverlay').classList.remove('active');
+        };
+
+        window.checkAdminPassword = function() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === 'admin123') {
+                isAdmin = true;
+                closeAdminLogin();
+                updateAdminBadge();
+                renderSchedule();
+                setTimeout(() => {
+                    document.getElementById('adminPanel').classList.add('active');
+                    document.getElementById('adminOverlay').classList.add('active');
+                }, 300);
+                showToast('Режим администратора активирован');
+            } else {
+                showToast('Неверный пароль');
+            }
+        };
+
+        window.logoutAdmin = function() {
+            isAdmin = false;
+            updateAdminBadge();
+            closeAdminPanel();
+            renderSchedule();
+            showToast('Вы вышли из админа');
+        };
+
+        // Вспомогательные функции для модальных окон
+        window.closeModal = function() {
+            document.querySelector('.modal')?.remove();
+            activeFilterRow = null;
+        };
+
+        window.closeModalIfOutside = function(event) {
+            if (event.target.classList.contains('modal')) {
+                closeModal();
+            }
+        };
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+    </script>
+</body>
+</html>
