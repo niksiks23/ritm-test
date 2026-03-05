@@ -1762,7 +1762,7 @@
                         </div>
                         <div class="filter-row ${appData.selectedGroups && appData.selectedGroups[1] ? 'active' : ''}" onclick="openGroupSelector(1)">
                             <span class="row-icon">②</span>
-                            <span class="row-label">Группа 2</span>
+                            <span class="row-label">Группа 2 (необязательно)</span>
                             <span class="row-group ${!appData.selectedGroups || !appData.selectedGroups[1] ? 'empty' : ''}">${appData.selectedGroups && appData.selectedGroups[1] ? appData.selectedGroups[1] : 'не выбрана'}</span>
                             ${appData.selectedGroups && appData.selectedGroups[1] ? `<span class="row-remove" onclick="removeGroup(1, event)">✕</span>` : ''}
                         </div>
